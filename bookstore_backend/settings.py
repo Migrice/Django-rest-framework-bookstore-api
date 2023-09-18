@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,6 +25,9 @@ SECRET_KEY = 'django-insecure-wupw^zf^an(z4*712-71#*zpzshe*mx$j6k%x3&em5g#(l9%0a
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+env = environ.Env()
+
 
 ALLOWED_HOSTS = ['web-production-21f9.up.railway.app']
 
@@ -82,8 +86,12 @@ WSGI_APPLICATION = 'bookstore_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'oGqzmw1U5k3hUhEA0UpY',
+        'HOST': 'containers-us-west-140.railway.app',
+        'PORT': '7649',
     }
 }
 
