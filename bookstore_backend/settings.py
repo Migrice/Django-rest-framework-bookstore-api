@@ -34,6 +34,13 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
+CORS_ALLOWED_ORIGINS = [
+    'https://web-production-21f9.up.railway.app',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-21f9.up.railway.app'
+]
 
 # Application definition
 
@@ -146,3 +153,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000', 'https://nextjs-bookstore-app-git-main-migrice.vercel.app'
 ]
+
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder", #check the static directory
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder" # check all static directories into apps
+]
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+MEDIA_URL = '/media/' #file system path
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # URL used in templates
