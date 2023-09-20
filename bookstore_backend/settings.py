@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import environ
+import os
+
+
+env = environ.Env()
+
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,15 +27,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-wupw^zf^an(z4*712-71#*zpzshe*mx$j6k%x3&em5g#(l9%0a'
+SECRET_KEY = env("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-env = environ.Env()
+DEBUG = env('DEBUG')
 
 
-ALLOWED_HOSTS = ['web-production-21f9.up.railway.app']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -65,7 +68,7 @@ ROOT_URLCONF = 'bookstore_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -85,14 +88,7 @@ WSGI_APPLICATION = 'bookstore_backend.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'oGqzmw1U5k3hUhEA0UpY',
-        'HOST': 'containers-us-west-140.railway.app',
-        'PORT': '7649',
-    }
+    'default': env.db()
 }
 
 
@@ -131,6 +127,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_HOST_USER =  env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+
+
+SENDER_EMAIL = env('SENDER_EMAIL')
+SENDER_PASSWORD = env('SENDER_PASSWORD')
+MAIL_HOST = env("MAIL_HOST")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
