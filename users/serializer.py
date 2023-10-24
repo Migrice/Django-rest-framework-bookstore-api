@@ -41,3 +41,10 @@ class UserCreateSlr(serializers.ModelSerializer):
         except Exception as e:
             print('Can not create the user')
             print("Exeption",e)
+
+class EmailSlr(serializers.Serializer):
+    email = serializers.EmailField(required=True, allow_blank=False)
+
+    class Meta:
+        model = User
+        fields = ["email"]

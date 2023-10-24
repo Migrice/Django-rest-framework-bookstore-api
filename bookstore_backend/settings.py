@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import environ
 import os
-
+from datetime import timedelta
 
 env = environ.Env()
 
@@ -34,9 +34,11 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
-CORS_ALLOWED_ORIGINS = [
-    'https://web-production-21f9.up.railway.app',
-]
+# CORS_ALLOWED_ORIGINS = [
+#     'https://web-production-21f9.up.railway.app',
+# ]
+CORS_ALLOW_ALL_ORIGINS=True
+
 
 CSRF_TRUSTED_ORIGINS = [
     'https://web-production-21f9.up.railway.app'
@@ -155,9 +157,10 @@ MAIL_HOST = env("MAIL_HOST")
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000', 'https://nextjs-bookstore-app-git-main-migrice.vercel.app'
+    'http://localhost:3000',
+    'https://nextjs-bookstore-app-git-main-migrice.vercel.app',
+    'http://127.0.0.1:3000'
 ]
-
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
@@ -181,3 +184,31 @@ STORAGES = {
 
 MEDIA_URL = '/media/' #file system path
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # URL used in templates
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES':(
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=2),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ALGORITHM": "HS256",
+    "UPDATE_LAST_LOGIN": True,
+    "SIGNING_KEY": SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION'
+
+}
+
+
+CACHES = {
+    'default':{
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION':'redis://127.0.0.1:6379',
+        'TIMEOUT':120
+    }
+}

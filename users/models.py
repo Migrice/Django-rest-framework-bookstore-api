@@ -8,6 +8,9 @@ class User(AbstractBaseUser, AbstractCustomModel):
     username = models.CharField(null=False, blank=False, max_length=255, unique=True)
     email = models.EmailField(null=False, blank=False, max_length=255,unique=True)
     password = models.CharField(null=False, blank=False, max_length=255)
+    is_active = models.BooleanField(default=False)
+
+
 
     USERNAME_FIELD = 'username'
     EMAIL_FIELD = 'email'

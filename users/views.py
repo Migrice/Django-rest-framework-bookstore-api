@@ -1,15 +1,15 @@
+import pyotp
 from rest_framework.generics import ListCreateAPIView
 from django.db import transaction
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
-from django.core.mail import send_mail
+from rest_framework.permissions import IsAuthenticated
 
 from users.models import User
-from users.serializer import UserCreateSlr, BaseUserSlr
-from users.utils import send_account_creation_mail
-
-
+from users.serializer import EmailSlr, UserCreateSlr, BaseUserSlr
+from users.utils import send_account_creation_mail, send_otp_mail
+from django.core.cache import cache
 
 
 class ListCreateUserView(ListCreateAPIView):
@@ -65,3 +65,43 @@ class ListCreateUserView(ListCreateAPIView):
             return UserCreateSlr
         else:
             return BaseUserSlr
+
+class UserSendOtpMail(ListCreateAPIView):
+
+    permission_classes = [IsAuthenticated]
+
+    queryset = User.objects.all()
+    serializer_class = EmailSlr
+
+    def create(self, request, *args, **kwargs):
+        serializer = EmailSlr(data=request.data)
+        if serializer.is_valid():
+            try:
+                user= User.objects.get(email = request.data["email"])
+            except User.DoesNotExist:
+                raise APIException(code=status.HTTP_400_BAD_REQUEST,
+                                   detail=f"User with email <<{request.data['email']}>> does not exists")
+
+            totp = pyotp.TOTP('base32secret3232', digits=6, interval=60)
+            otp_code = totp.now()
+            send_otp_mail(username=user.username, email= user.email, otp=otp_code)
+            print(otp_code)
+            cache.set("otp_code", otp_code)
+            #print("Mail send successfully")
+            #code = cache.get('otp_code')
+            #print("cache data", code)
+            return Response( status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class CheckOTPCodeValidView(ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+
+        user_otp = request.data["otp_code"]
+        cache_otp = cache.get('otp_code')
+        if user_otp != cache_otp:
+            return Response(data="Invalid OTP code", status=status.HTTP_400_BAD_REQUEST)
+        return Response(data="Valid OTP", status=status.HTTP_200_OK)
+
